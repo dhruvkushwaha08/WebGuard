@@ -1,0 +1,48 @@
+env:
+  contexts:
+    - name: WebGuardLocal
+      urls:
+        - http://127.0.0.1:5000/
+      includePaths:
+        - 'http://127\.0\.0\.1:5000/.*'
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+jobs:
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+  - type: spider
+    parameters:
+      context: WebGuardLocal
+      url: http://127.0.0.1:5000/
+      maxDuration: 1
+      maxDepth: 5
+      maxChildren: 25
+      postForm: false
+      processForm: false
+      logoutAvoidance: true
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 2
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-baseline.html
+      reportTitle: WebGuard OWASP ZAP Baseline Scan
+      reportDescription: 'ZAP 2.17.0 baseline passive scan limited to http://127.0.0.1:5000/'
+      displayReport: false
+      sites:
+        - http://127.0.0.1:5000
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-baseline.json
+      reportTitle: WebGuard OWASP ZAP Baseline Scan
+      reportDescription: 'ZAP 2.17.0 baseline passive scan limited to http://127.0.0.1:5000/'
+      displayReport: false
+      sites:
+        - http://127.0.0.1:5000

@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}Request blocked · WebGuard{% endblock %}{% block content %}<h1>Request blocked</h1><p>Request inspection matched a suspicious pattern.</p><ul>{% for finding in findings %}<li>{{ finding.attack_type }} — {{ finding.reason }}</li>{% endfor %}</ul><a href="{{ url_for('dashboard.index') }}">Return to dashboard</a>{% endblock %}

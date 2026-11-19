@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Security events · WebGuard{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">MONITORING / AUDIT LOG</p>
+    <h1>Security events</h1>
+    <p class="text-secondary mb-0">Search and review recorded request detections.</p>
+  </div>
+</section>
+
+<section class="card panel-card mb-4">
+  <div class="card-body">
+    <form id="filters" class="row g-3 align-items-end">
+      <div class="col-12 col-md-6 col-xl-3">
+        <label class="form-label" for="attack-type">Attack type</label>
+        <select id="attack-type" name="attack_type" class="form-select">
+          <option value="">All attack types</option><option value="SQL_INJECTION">SQL injection</option><option value="XSS">XSS</option><option value="INVALID_INPUT">Invalid input</option><option value="MALFORMED_REQUEST">Malformed request</option><option value="RATE_LIMIT">Rate limit</option><option value="OTHER">Other</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-6 col-xl-2">
+        <label class="form-label" for="severity">Severity</label>
+        <select id="severity" name="severity" class="form-select">
+          <option value="">All severities</option><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-6 col-xl-2">
+        <label class="form-label" for="action">Action</label>
+        <select id="action" name="action" class="form-select">
+          <option value="">All actions</option><option>BLOCKED</option><option>FLAGGED</option><option>ALLOWED</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-3 col-xl-2">
+        <label class="form-label" for="date-from">From</label>
+        <input id="date-from" class="form-control" type="date" name="date_from">
+      </div>
+      <div class="col-6 col-md-3 col-xl-2">
+        <label class="form-label" for="date-to">To</label>
+        <input id="date-to" class="form-control" type="date" name="date_to">
+      </div>
+      <div class="col-12 col-lg-7 col-xl-4">
+        <label class="form-label" for="search">Search</label>
+        <input id="search" class="form-control" name="q" maxlength="100" placeholder="Path or detection reason">
+      </div>
+      <div class="col-6 col-lg-3 col-xl-2">
+        <label class="form-label" for="sort">Sort by</label>
+        <select id="sort" name="sort" class="form-select"><option value="timestamp">Time</option><option value="attack_type">Attack type</option><option value="severity">Severity</option><option value="path">Path</option></select>
+      </div>
+      <div class="col-6 col-lg-2 col-xl-2">
+        <label class="form-label" for="direction">Order</label>
+        <select id="direction" name="direction" class="form-select"><option value="desc">Newest first</option><option value="asc">Oldest first</option></select>
+      </div>
+      <div class="col-12 col-lg-auto ms-lg-auto d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Apply filters</button>
+        <button class="btn btn-outline-secondary" id="reset-filters" type="reset">Reset</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="card panel-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h2 class="h5 mb-0">Event log</h2><span id="event-count" class="badge text-bg-secondary">Loading</span>
+  </div>
+  <div id="events-status" class="px-3 pt-3 text-secondary" role="status" aria-live="polite"></div>
+  <div id="events" class="table-responsive px-3 pb-2"></div>
+  <div class="card-footer d-flex align-items-center justify-content-between gap-3">
+    <button id="prev" class="btn btn-outline-secondary" type="button">Previous</button>
+    <span id="page" class="small text-secondary" aria-live="polite">Page 1</span>
+    <button id="next" class="btn btn-outline-secondary" type="button">Next</button>
+  </div>
+</section>
+
+<dialog id="event-detail-dialog" class="event-dialog" aria-labelledby="detail-title">
+  <div class="event-dialog-header"><div><p class="eyebrow">AUDIT RECORD</p><h2 id="detail-title" class="h4 mb-0">Event details</h2></div><button id="close-details" class="btn btn-outline-secondary" type="button" aria-label="Close event details">Close</button></div>
+  <dl id="event-details" class="detail-grid mt-4"></dl>
+</dialog>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/events.js') }}"></script>{% endblock %}

@@ -1,0 +1,110 @@
+env:
+  contexts:
+    - name: WebGuardBaseline
+      urls:
+        - http://127.0.0.1:5001/
+      includePaths:
+        - 'http://127\.0\.0\.1:5001/.*'
+    - name: WebGuardHealthActive
+      urls:
+        - http://127.0.0.1:5001/health
+      includePaths:
+        - 'http://127\.0\.0\.1:5001/health.*'
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+jobs:
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+  - type: spider
+    parameters:
+      context: WebGuardBaseline
+      url: http://127.0.0.1:5001/
+      maxDuration: 1
+      maxDepth: 5
+      maxChildren: 25
+      postForm: false
+      processForm: false
+      logoutAvoidance: true
+  - type: spider
+    parameters:
+      context: WebGuardHealthActive
+      url: http://127.0.0.1:5001/health
+      maxDuration: 1
+      maxDepth: 1
+      maxChildren: 5
+      postForm: false
+      processForm: false
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 2
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-baseline.html
+      reportTitle: WebGuard OWASP ZAP Baseline Scan After Fixes
+      reportDescription: 'Passive spider scan of updated WebGuard source in isolated localhost instance; scope http://127.0.0.1:5001/'
+      displayReport: false
+    sites:
+      - http://127.0.0.1:5001
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-baseline.json
+      reportTitle: WebGuard OWASP ZAP Baseline Scan After Fixes
+      reportDescription: 'Passive spider scan of updated WebGuard source in isolated localhost instance; scope http://127.0.0.1:5001/'
+      displayReport: false
+    sites:
+      - http://127.0.0.1:5001
+  - type: activeScan
+    parameters:
+      context: WebGuardHealthActive
+      url: http://127.0.0.1:5001/health
+      defaultStrength: Low
+      defaultThreshold: "Off"
+      addQueryParam: true
+      delayInMs: 100
+      threadPerHost: 1
+      maxScanDurationInMins: 2
+      maxRuleDurationInMins: 1
+      maxAlertsPerRule: 5
+    policyDefinition:
+      defaultStrength: Low
+      defaultThreshold: "Off"
+      rules:
+        - id: 40012
+          name: Cross Site Scripting (Reflected)
+          strength: Low
+          threshold: Low
+        - id: 40018
+          name: SQL Injection
+          strength: Low
+          threshold: Low
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 2
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-active.html
+      reportTitle: WebGuard OWASP ZAP Controlled Active Scan
+      reportDescription: 'Controlled low-strength XSS and SQL injection rules against only http://127.0.0.1:5001/health'
+      displayReport: false
+    sites:
+      - http://127.0.0.1:5001
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: C:/Users/Asus/Projects/WebGuard/docs/security-assessment
+      reportFile: zap-active.json
+      reportTitle: WebGuard OWASP ZAP Controlled Active Scan
+      reportDescription: 'Controlled low-strength XSS and SQL injection rules against only http://127.0.0.1:5001/health'
+      displayReport: false
+    sites:
+      - http://127.0.0.1:5001
+
